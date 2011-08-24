@@ -83,7 +83,8 @@ function post_node_to_facebook($node, $settings) {
   $attachment = array(
     'name' => $node->title,
     'href' => url('node/' . $node->nid, array('absolute' => TRUE)),
-    //'caption' => date('d-m-Y', $node->created),
+    'caption' => date('d-m-Y', $node->created),
+		'description' => check_plain($node->teaser),
     //'description' => strip_tags(htmlspecialchars_decode($node->teaser)),
     /*
 		'media' => array(array(
