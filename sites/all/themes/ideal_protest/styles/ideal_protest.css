@@ -115,7 +115,9 @@ p {
 }
 
 /* social nav end */
-
+#search-box {
+	overflow:hidden;
+}
 #search-box .views-exposed-widgets{
 	float:left;
 }

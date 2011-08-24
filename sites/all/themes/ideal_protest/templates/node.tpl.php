@@ -71,6 +71,17 @@
   </div>
 
   <?php print $links; ?>
-  
-  
 </div>
+
+<?php if ($node->comment == '2' && !$teaser) : ?>
+  <h3><?php print t('Comment')?></h3>
+	<div class="box comment-form-box clear-block">
+    <?php if ($user->uid) : ?>
+      <?php print drupal_get_form('comment_form', array('nid' => $node->nid)); ?>
+    <?php else : ?>
+      <div class="anonymous-comment-form">
+        <?php print t('to add your idea, vote or comment you must be a registered user in @sitename, Please !login or !register', array('@sitename' => variable_get('site_name', "Ideal"), '!login' => l(t('Login'), 'user/login'), '!register' => l(t('Register'), 'user/register'))); ?>
+      </div>
+    <?php endif; ?>      
+  </div>
+<?php endif; ?>
