@@ -315,4 +315,13 @@ ul li.comment_add {
 .cke_skin_kama {
   width: 98% !important;
 } 
+
+.spivak-logo h2 a.book-title {
+    background: url("../images/S_Y_logo_square.png") repeat scroll 0 0 transparent;
+    height: 109px;
+    overflow: hidden;
+    text-indent: -900px;
+    width: 147px;
+		display:block;
+}
  
