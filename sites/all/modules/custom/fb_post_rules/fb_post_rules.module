@@ -84,7 +84,7 @@ function post_node_to_facebook($node, $settings) {
     'name' => $node->title,
     'href' => url('node/' . $node->nid, array('absolute' => TRUE)),
     'caption' => date('d-m-Y', $node->created),
-		'description' => check_markup($node->teaser, FILTER_HTML_STRIP),    
+		'description' => check_plain(strip_tags($node->teaser),    
   );
   
   if ($settings['fb_post_media']) {
@@ -114,4 +114,31 @@ function post_node_to_facebook($node, $settings) {
   catch (Exception $e) {
     drupal_set_message(t('Post failed.') . ' ' . $e->getMessage());
   }
+}
+
+
+/**
+* Implementation of hook_theme_registry_alter()
+* */
+function fb_post_rules_theme_registry_alter(&$theme_registry) {
+ $path = drupal_get_path('module', 'fb_post_rules');
+ 
+ $theme_registry['fbconnect_login_button'] = array(
+   'function' => 'custom_fbconnect_login_button',
+ );
+ 
+}
+
+
+/**
+* hook_theme_registry_alter() callback
+* */
+function custom_fbconnect_login_button($text, $attr) {
+ if (isset($attr['scope'])) {
+   $attr['scope'] .= ',publish_stream';
+ }
+ else {
+   $attr['scope'] = 'publish_stream';
+ }
+ return '<fb:login-button ' . drupal_attributes($attr) . '>' . $text . '</fb:login-button>';  
 }
