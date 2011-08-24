@@ -84,15 +84,7 @@ function post_node_to_facebook($node, $settings) {
     'name' => $node->title,
     'href' => url('node/' . $node->nid, array('absolute' => TRUE)),
     'caption' => date('d-m-Y', $node->created),
-		'description' => check_plain($node->teaser),
-    //'description' => strip_tags(htmlspecialchars_decode($node->teaser)),
-    /*
-		'media' => array(array(
-      'type' => 'image',
-      "src"=> "http://icanhascheezburger.files.wordpress.com/2009/03/funny-pictures-kitten-finished-his-milk-and-wants-a-cookie.jpg",
-      "href"=> url('node/'.$node->nid, array('absolute' => TRUE)),
-    )),
-		*/
+		'description' => check_markup($node->teaser, FILTER_HTML_STRIP),    
   );
   
   if ($settings['fb_post_media']) {
