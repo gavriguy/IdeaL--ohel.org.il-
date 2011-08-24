@@ -134,11 +134,11 @@ function fb_post_rules_theme_registry_alter(&$theme_registry) {
 * hook_theme_registry_alter() callback
 * */
 function custom_fbconnect_login_button($text, $attr) {
- if (isset($attr['scope'])) {
-   $attr['scope'] .= ',publish_stream';
+ if (isset($attr['perms'])) {
+   $attr['perms'] .= ',publish_stream';
  }
  else {
-   $attr['scope'] = 'publish_stream';
+   $attr['perms'] = 'publish_stream';
  }
  return '<fb:login-button ' . drupal_attributes($attr) . '>' . $text . '</fb:login-button>';  
 }
