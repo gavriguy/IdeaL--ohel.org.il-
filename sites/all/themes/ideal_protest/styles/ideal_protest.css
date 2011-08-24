@@ -42,13 +42,80 @@ p {
 
 
 #site-header {
-	background:#000;
+/*	background:#000;*/
 }
-#site-header a {
+#site-header .j14-header{
+	background:#484848;
+	overflow:hidden;
+}
+#site-header .j14-header ul.menu {
+	overflow:hidden;
+}
+#site-header .j14-header .block-menu {
+	float:right;
+	margin:0;
+}
+#site-header .j14-header ul.menu li {
+	float: right;
+	line-height: 2.3em;
+	padding: 0 10px;
+}
+#site-header .j14-header ul.menu li a {
 	color:#fff;
 	text-decoration:none;
-	
+	font-weight:normal;
 } 
+#site-header .j14-header ul.menu li.last {
+	border-right: 1px solid #FFFFFF;
+}
+#site-header .j14-header ul.menu li a.highlight {
+	background-color: yellow;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding:3px 8px;
+	color:black;
+}
+/* social nav */
+
+.quick-nav  {
+	float:left;
+	padding-left:10px;
+	margin:0;
+}
+#nav .quick-nav li {
+    padding-top: 8px;
+}
+.quick-nav li {
+    padding: 5px 8px 0 0;
+}
+.quick-nav li {
+    display: inline;
+    float: right;
+}
+.quick-nav li a#rss{
+    background: url("../images/rss.png") no-repeat scroll 0 0 transparent;
+}
+.quick-nav li a#twitter{
+    background: url("../images/twitter.png") no-repeat scroll 0 0 transparent;
+}
+.quick-nav li a#facebook{
+    background: url("../images/facebook.png") no-repeat scroll 0 0 transparent;
+}
+.quick-nav li a#youtube{
+    background: url("../images/youtube.png") no-repeat scroll 0 0 transparent;
+}
+.quick-nav li a{
+    clear: right;
+    display: block;
+    float: right;
+    height: 16px;
+    text-indent: -9000px;
+    width: 16px;
+}
+
+/* social nav end */
+
 #search-box .views-exposed-widgets{
 	float:left;
 }
