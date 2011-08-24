@@ -128,7 +128,10 @@ p {
   margin-bottom: 25px;
 }
 #page {
-	background:url("../images/lines.gif") no-repeat scroll top center transparent;
+	background:url("../images/lines.gif") repeat-y scroll top center transparent;
+	margin-bottom:20px;
+	padding:10px 0;
+	
 }
 #sidebar-right .block {
 	padding-bottom:10px;
@@ -204,9 +207,9 @@ ul.menu li {
   text-decoration: none;
 }
 #block-menu-primary-links ul.menu li.active-trail a.active {
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #000000;
-  border-top: 1px solid #000000;
+  background-color: #F5F5F5;
+  border-bottom: 1px solid #D3D1C7;
+  border-top: 1px solid #D3D1C7;
   width: 135px;
 	padding-top:3px;
 	padding-bottom:3px;
