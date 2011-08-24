@@ -125,6 +125,10 @@ ul.menu li {
 #block-menu-primary-links ul.menu li a.link-login {
 	background-position: right -58px;
 }
+
+#block-menu-primary-links ul.menu li a.link-tag {
+	background-position: right -29px;
+}
 #block-menu-primary-links ul.menu li a {
 	color:#4E4A49;
   font-weight: bold;
