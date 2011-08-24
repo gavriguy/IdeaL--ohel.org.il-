@@ -28,28 +28,13 @@
 	   </div>
 	</div>
   <div id="page" class="container-16 clear-block">
-<!--
-    <div id="site-subheader" class="prefix-1 suffix-1 clear-block">
-    <?php if ($mission): ?>
-      <div id="mission" class="<?php print ns('grid-14', $header, 7); ?>">
-        <?php print $mission; ?>
-      </div>
-    <?php endif; ?>
-
-    <?php if ($header): ?>
-      <div id="header-region" class="region <?php print ns('grid-14', $mission, 7); ?> clear-block">
-        <?php print $header; ?>
-      </div>
-    <?php endif; ?>
-    </div>
--->
 
     <div id="main" class="column grid-10 push-3">
       <div id="main-inner">
 				<?php print $breadcrumb; ?>
 				<?php if ($mission): ?>
 		      <div id="mission">
-		        <?php print $mission; ?>
+		        <?php print check_markup($mission); ?>
 		      </div>
 		    <?php endif; ?>
 	      <?php if ($title): ?>

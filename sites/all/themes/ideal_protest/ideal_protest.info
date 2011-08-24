@@ -4,6 +4,7 @@ core = 6.x
 engine = phptemplate
 base theme = ninesixty
 stylesheets[all][] = styles/ideal_protest.css
+scripts[] = "js/jquery.readmore.js"
 scripts[] = "js/ideal_protest.js"
 
 
