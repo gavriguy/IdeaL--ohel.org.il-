@@ -84,7 +84,7 @@ function post_node_to_facebook($node, $settings) {
     'name' => $node->title,
     'href' => url('node/' . $node->nid, array('absolute' => TRUE)),
     'caption' => date('d-m-Y', $node->created),
-		'description' => check_plain(strip_tags($node->teaser),    
+		'description' => check_plain(strip_tags($node->teaser)),    
   );
   
   if ($settings['fb_post_media']) {
