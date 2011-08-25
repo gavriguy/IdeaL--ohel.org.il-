@@ -399,5 +399,5 @@ ul li.comment_add {
 		display:block;
 }
 .view-brand-page-description a h2 {
-	text-decoration:bold;
+	text-decoration:underline;
 }
