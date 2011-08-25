@@ -1,6 +1,7 @@
 /* GENERAL*/
 body {
   color: #333;
+	direction:rtl;
 }
 
 /* header */
@@ -112,6 +113,7 @@ p {
     height: 16px;
     text-indent: -9000px;
     width: 16px;
+		text-decoration:none;
 }
 
 /* social nav end */
