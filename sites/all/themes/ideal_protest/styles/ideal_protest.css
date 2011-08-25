@@ -398,4 +398,6 @@ ul li.comment_add {
     width: 147px;
 		display:block;
 }
- 
+.view-brand-page-description a h2 {
+	text-decoration:bold;
+}
