@@ -14,42 +14,29 @@
 
 <body class="<?php print $body_classes; ?>">
 	<div id="site-header" class="clear-block">
-		<div class="container-16">
-    	<div id="branding" class="grid-10 clear-block">
-	      <?php if ($linked_site_name): ?>
-	        <h1 id="site-name"><?php print $linked_site_name; ?></h1>
-	      <?php endif; ?>
-	    </div>
-    
-		<?php if ($search_box): ?>
-	      <?php $search = module_invoke('views', 'block', 'view', "-exp-search_results-page_1")?>
-	      <div id="search-box" class="grid-6 "><?php print $search['content'];//$search_box; ?></div>
-	    <?php endif; ?>
-	   </div>
+		<?php if($header):?>
+			<div class="container-16 j14-header">
+				<?php print $header; ?>
+				<ul class="quick-nav clearfix">
+									<li><a href="http://j14.org.il/?feed=rss2" title="j14  - צדק חברתי RSS Feed" id="rss">RSS Feed</a></li>
+
+											<li><a href="http://www.twitter.com/TLV_Revolution/" title="j14  - צדק חברתי טוויטר" id="twitter" onclick="javascript:window.open('http://www.twitter.com/TLV_Revolution/'); return false;">טוויטר</a></li>
+
+											<li><a href="https://www.facebook.com/J14.Israel" title="j14  - צדק חברתי פייסבוק" id="facebook" onclick="javascript:window.open('https://www.facebook.com/J14.Israel'); return false;">פייסבוק</a></li>
+
+						        <li><a href="http://www.youtube.com/user/betzeohel" title="j14  - צדק חברתי on YouTube" id="youtube" onclick="javascript:window.open('http://www.youtube.com/user/betzeohel'); return false;">YouTube</a></li>
+				        	</ul>
+			</div>
+		<?php endif;?>
 	</div>
   <div id="page" class="container-16 clear-block">
-<!--
-    <div id="site-subheader" class="prefix-1 suffix-1 clear-block">
-    <?php if ($mission): ?>
-      <div id="mission" class="<?php print ns('grid-14', $header, 7); ?>">
-        <?php print $mission; ?>
-      </div>
-    <?php endif; ?>
-
-    <?php if ($header): ?>
-      <div id="header-region" class="region <?php print ns('grid-14', $mission, 7); ?> clear-block">
-        <?php print $header; ?>
-      </div>
-    <?php endif; ?>
-    </div>
--->
 
     <div id="main" class="column grid-10 push-3">
       <div id="main-inner">
 				<?php print $breadcrumb; ?>
 				<?php if ($mission): ?>
 		      <div id="mission">
-		        <?php print $mission; ?>
+		        <?php print check_markup($mission); ?>
 		      </div>
 		    <?php endif; ?>
 	      <?php if ($title): ?>
@@ -84,6 +71,10 @@
 
   <?php if ($right): ?>
     <div id="sidebar-right" class="column sidebar region grid-3">
+			<?php if ($search_box): ?>
+		      <?php $search = module_invoke('views', 'block', 'view', "-exp-search_results-page_1")?>
+		      <div id="search-box"><?php print $search['content'];//$search_box; ?></div>
+		    <?php endif; ?>
       <?php print $right; ?>
     </div>
   <?php endif; ?>

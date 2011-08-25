@@ -25,7 +25,7 @@
  * @see template_preprocess_comment()
  * @see theme_comment()
  */
-//dpm($comment);
+dpm($comment);
 ?>
 <?php global $user;?>
 
@@ -47,10 +47,8 @@
       
       <?php print $links ?>
 
-      <?php if (/*!$comment->pid &&*/ $user->uid): ?>
       <?php 
         print drupal_get_form("comment_form_$node->nid$comment->cid",array('nid' => $node->nid, 'pid' => $comment->cid));      ?>
-      <?php endif; ?>
 
     </div>
   </div>

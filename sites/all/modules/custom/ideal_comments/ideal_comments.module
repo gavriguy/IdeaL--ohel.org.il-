@@ -40,17 +40,30 @@ function ideal_comments_forms($form_id, $args) {
  */
 function ideal_comments_form_alter(&$form, $form_state, $form_id) {
   global $user;
-  if (strpos($form_id, 'comment_form') === 0) {
+	if (strpos($form_id, 'comment_form') === 0) {
     if (strpos($form_id, 'comment_form_') === 0) {
       $form['#submit'][] = 'comment_form_submit';
       $form['#validate'][] = 'comment_form_validate';
     }
+		$form['#theme'] = 'ideal_comment_form';
+		/*
+			TODO replace if statement with user_access
+		*/
+		if (!user_access('post comments')) {
+				$form['my_captcha_element'] = array(
+				  '#type' => 'captcha',
+				);
+		}
     $form['#attributes'] = array('class' => 'comment-form');
     $form['comment_filter']['comment']['#rows'] = '5';
     $form['comment_filter']['format']['#weight'] = '0';
     unset($form['_author']);
     unset($form['comment_filter']['comment']['#title']);
     unset($form['preview']);
+		unset($form['homepage']);
+		$form['submit']['#value'] = t('Add comment');
+		//don't show wysiwyg on comments
+		$form['comment_filter']['format'] = array();
   }
 }
 
