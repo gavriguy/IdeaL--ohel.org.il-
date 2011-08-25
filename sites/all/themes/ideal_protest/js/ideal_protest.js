@@ -6,4 +6,11 @@ Drupal.behaviors.ideal_protest = function(context) {
 	$('.login-link').click(function(){
 		$('.regular-login').show();
 	});
+	//
+	$('#mission , .view-brand-page-description .views-field-description').expander({
+		slicePoint: 300,
+		expandText: 'קרא עוד',
+		userCollapseText: '[צמצם]'});
+	//
+	
 };
