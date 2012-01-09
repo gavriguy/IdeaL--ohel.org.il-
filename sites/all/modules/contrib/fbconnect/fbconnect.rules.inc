@@ -1,16 +1,15 @@
 <?php
-// $Id: fbconnect.rules.inc,v 1.1.2.1 2010/08/24 14:07:15 vectoroc Exp $
 
 /**
- * @file rules integration for the fbconnect module
+ * @file
+ * Rules integration for the fbconnect module.
  *
  * @addtogroup rules
  * @{
  */
 
-
 /**
- * Implementation of hook_rules_event_info().
+ * Implements hook_rules_event_info().
  */
 function fbconnect_rules_event_info() {
   return array(

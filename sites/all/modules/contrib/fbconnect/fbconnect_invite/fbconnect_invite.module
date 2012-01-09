@@ -1,8 +1,12 @@
 <?php
-// $Id: fbconnect_invite.module,v 1.1.2.3 2010/10/12 15:07:18 vectoroc Exp $
 
 /**
- * Implementation of hook_menu().
+ * @file
+ * @todo.
+ */
+
+/**
+ * Implements hook_menu().
  */
 function fbconnect_invite_menu() {
   $items['fbconnect/invite/friends'] = array(
@@ -12,7 +16,7 @@ function fbconnect_invite_menu() {
     'access arguments' => array('invite facebook friends'),
     'type' => MENU_CALLBACK,
   );
-  
+
   $items['fbconnect/invite/accept/%user'] = array(
     'title' => 'Accept invite',
     'page callback' => 'fbconnect_invite_accept',
@@ -20,41 +24,41 @@ function fbconnect_invite_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
-  
+
   $items['admin/settings/fbconnect/invite'] = array(
-    'title' => 'Friends Invite', 
-    'page callback' => 'drupal_get_form', 
-    'page arguments' => array('fbconnect_invite_settings'), 
+    'title' => 'Friends Invite',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fbconnect_invite_settings'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
   );
-  
+
   return $items;
 }
 
 /**
- * Implementation of hook_perm()
+ * Implements hook_perm().
  */
 function fbconnect_invite_perm() {
   return array('invite facebook friends');
 }
 
 /**
- * Implementation of hook_theme()
+ * Implements hook_theme().
  */
 function fbconnect_invite_theme() {
   return array(
     'fbconnect_invite_form' => array(
       'arguments' => array(
-        'request_form_attributes' => array(), 
-        'friends_selector_attributes' => array(),        
+        'request_form_attributes' => array(),
+        'friends_selector_attributes' => array(),
       ),
     ),
   );
 }
 
 /**
- * Implementation of hook_block().
+ * Implements hook_block().
  */
 function fbconnect_invite_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
@@ -66,9 +70,9 @@ function fbconnect_invite_block($op = 'list', $delta = 0, $edit = array()) {
     case 'view':
       $fbuid  = fbconnect_get_fbuid(TRUE);
       if (user_is_logged_in() && $fbuid) {
-        $cid    = 'fbconnect:'. $fbuid;
+        $cid    = 'fbconnect:' . $fbuid;
         $cached = cache_get($cid, 'cache_block');
-         
+
         if ($cached->data) {
           $content = $cached->data;
         }
@@ -79,10 +83,10 @@ function fbconnect_invite_block($op = 'list', $delta = 0, $edit = array()) {
               $row[] = theme('username', $friend);
             }
             $content = theme('item_list', $row);
-            cache_set($cid, $content, 'cache_block' , time() + 3600);
+            cache_set($cid, $content, 'cache_block', time() + 3600);
           }
         }
-        
+
         $link_options = array();
         if (!drupal_is_front_page()) {
           $link_options = array('query' => drupal_get_destination());
@@ -104,20 +108,20 @@ function fbconnect_invite_block($op = 'list', $delta = 0, $edit = array()) {
 function fbconnect_invite_friends_page() {
   global $base_url;
   global $user;
-  
-  $site = variable_get('site_name', $base_url);  
+
+  $site = variable_get('site_name', $base_url);
   $type = check_plain(variable_get('fbconnect_invite_name', $site));
   $join_btn = check_plain(variable_get('fbconnect_invite_label', t('Become a Member!')));
   $invite_msg = check_plain(variable_get('fbconnect_invite_msg', t('Enjoy!')));
   $action_txt = check_plain(t('Please select the Facebook friends you want to invite'));
-  $invite_dest = isset($_REQUEST['destination']) ? $_REQUEST['destination'] : ''; 
-  $accept_url  = url('fbconnect/invite/accept/'. $user->uid, array(
-    'absolute' => TRUE, 
-    'query' => 'destionation='. urlencode($invite_dest)
+  $invite_dest = isset($_REQUEST['destination']) ? $_REQUEST['destination'] : '';
+  $accept_url  = url('fbconnect/invite/accept/' . $user->uid, array(
+    'absolute' => TRUE,
+    'query' => 'destionation=' . urlencode($invite_dest),
   ));
-  
+
   $content = "$invite_msg <fb:req-choice url=\"$accept_url\" label=\"$join_btn\" />";
-             
+
   $request_form_attributes = array(
     'method'  => 'POST',
     'action'  => url($invite_dest, array('absolute' => TRUE)),
@@ -125,7 +129,7 @@ function fbconnect_invite_friends_page() {
     'content' => $content,
     'invite'  => TRUE,
   );
-  
+
   $friends_selector_attributes = array(
     'cols' => "6",
     'rows' => "6",
@@ -134,10 +138,13 @@ function fbconnect_invite_friends_page() {
     'actiontext' => $action_txt,
     'bypass' => "cancel",
   );
-  
+
   return theme('fbconnect_invite_form', $request_form_attributes, $friends_selector_attributes);
 }
 
+/**
+ * @todo.
+ */
 function theme_fbconnect_invite_form($request_form_attributes, $friends_selector_attributes) {
   $request_form_attr    = drupal_attributes($request_form_attributes);
   $friend_selector_attr = drupal_attributes($friends_selector_attributes);
@@ -159,11 +166,11 @@ FBML;
  * Get facebook friend who has_added_app.
  */
 function fbconnect_get_connected_friends($fbuid) {
-  if (facebook_client()) {
+  if (fbconnect_facebook_client()) {
     $query = "SELECT uid, has_added_app FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = $fbuid)";
     try {
       try {
-        $rows = facebook_client()->api(array(
+        $rows = fbconnect_facebook_client()->api(array(
          'method' => 'fql.query',
          'query'  => $query,
         ));
@@ -187,50 +194,49 @@ function fbconnect_get_connected_friends($fbuid) {
       }
 
       if ($fbid) {
-        $res = db_query('SELECT uid FROM {fbconnect_users} WHERE fbuid IN ('. implode($fbid, ',') .')');
+        $res = db_query('SELECT uid FROM {fbconnect_users} WHERE fbuid IN (' . implode($fbid, ',') . ')');
         while ($uid = db_result($res)) {
           $user = user_load($uid);
           if ($user->fb_visible) {
             $friends[] = $user;
           }
         }
-         
+
         return $friends;
       }
     }
   }
 }
 
+/**
+ * @todo.
+ */
 function fbconnect_invite_settings() {
   $form['fbconnect_invite_msg'] = array(
     '#type' => 'textfield',
-    '#title' => t('Invite message'),      
+    '#title' => t('Invite message'),
     '#default_value' => variable_get('fbconnect_invite_msg', t('Enjoy facebook connect')),
   );
-  
+
   $form['fbconnect_invite_label'] = array(
     '#type' => 'textfield',
-    '#title' => t('Invite button label'),      
+    '#title' => t('Invite button label'),
     '#default_value' => variable_get('fbconnect_invite_label', t('Become a Member!')),
   );
-  
+
   $form['fbconnect_invite_name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Your site name'),      
+    '#title' => t('Your site name'),
     '#default_value' => variable_get('fbconnect_invite_name', variable_get('site_name', NULL)),
   );
-  
-// TODO: remove it
-//  $form['fbconnect_invite_dest'] = array(
-//    '#type' => 'textfield',
-//    '#title' => t('Destination, after user\'s valid or skip invite friend form'),
-//    '#default_value' => variable_get('fbconnect_invite_dest', $base_url),
-//  );
-//  
+
   return system_settings_form($form);
 }
 
+/**
+ * @todo.
+ */
 function fbconnect_invite_accept($inviter) {
   module_invoke('rules', 'invoke_event', 'fbconnect_invite_accepted', $inviter);
-  drupal_goto();  
+  drupal_goto();
 }

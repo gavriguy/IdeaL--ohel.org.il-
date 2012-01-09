@@ -1,20 +1,22 @@
 <?php
-// $Id: fbconnect.admin.inc,v 1.19.2.3 2010/10/30 12:18:35 vectoroc Exp $
 
-/** 
- * @file 
- * Administration page callbacks for the fbconnect module. 
- */ 
+/**
+ * @file
+ * Administration page callbacks for the fbconnect module.
+ */
 
+/**
+ * @todo.
+ */
 function fbconnect_api_keys_settings(&$form_state) {
-  $form['fbconnect_appid'] = array( 
-    '#type' => 'textfield', 
+  $form['fbconnect_appid'] = array(
+    '#type' => 'textfield',
     '#required' => TRUE,
-    '#title' => t('Application ID'), 
+    '#title' => t('Application ID'),
     '#default_value' => variable_get('fbconnect_appid', NULL),
     '#description' => t('Your Application ID, <strong> not API Key </strong>'),
   );
-  
+
   $form['fbconnect_skey'] = array(
     '#type' => 'textfield',
     '#required' => TRUE,
@@ -22,14 +24,14 @@ function fbconnect_api_keys_settings(&$form_state) {
     '#default_value' => variable_get('fbconnect_skey', NULL),
     '#description' => t('Do not share your secret key with anyone'),
   );
-  
+
   $form['fbconnect_language_code'] = array(
     '#type' => 'textfield',
     '#title' => (module_exists('i18n')) ? t('Default language code') : t('Language code'),
     '#description' => t('Enter your country code here to get translated versions of facebook connect. (e.g. en_US or de_DE)'),
     '#default_value' => variable_get('fbconnect_language_code', 'en_US'),
   );
-  
+
   if (module_exists('i18n')) {
     $form['language_codes'] = array(
       '#type'          => 'fieldset',
@@ -47,30 +49,27 @@ function fbconnect_api_keys_settings(&$form_state) {
         '#options'       => array('' => t('- Use default -')) + _fbconnect_language_codes(),
       );
     }
-  }  
-  
+  }
+
   $form['fbconnect_debug'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Debug mode'),      
+    '#title' => t('Debug mode'),
     '#default_value' => variable_get('fbconnect_debug', FALSE),
-  );  
-  
+  );
+
   $form['fbconnect_connect_url'] = array(
     '#type' => 'item',
     '#title' => t('Connect url'),
     '#description' => t('Copy this value into Facebook Applications on Connect settings tab'),
-    '#value' => variable_get('fbconnect_connect_url', $GLOBALS['base_url'] . '/'),
+    '#default_value' => variable_get('fbconnect_connect_url', $GLOBALS['base_url'] . '/'),
   );
-    
-//  locale
-//  connect_logo_url
-//  about_url
-//  base_domain
-//  tos_url
 
   return system_settings_form($form);
 }
 
+/**
+ * @todo.
+ */
 function fbconnect_appearance_settings(&$form_state) {
   $form['site'] = array(
     '#type' => 'fieldset',
@@ -82,9 +81,14 @@ function fbconnect_appearance_settings(&$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Fast registration mode'),
     '#default_value' => variable_get('fbconnect_fast_reg', NULL),
-    '#description' => t('Enable this mode will bypass drupal\'s standard registration form.'),
+    '#description' => t("Enable this mode will bypass drupal's standard registration form."),
   );
-  
+  $form['site']['fbconnect_fast_reg_autoname'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Assign new random name on name conflict during Fast Registration'),
+    '#default_value' => variable_get('fbconnect_fast_reg_autoname', NULL),
+    '#description' => t("Creates a new random name for the user if the user's Facebook is already taken by another user on this site. The random name will look something like fbuser123."),
+  );
   $form['site']['fbconnect_loginout_mode'] = array(
     '#type' => 'select',
     '#title' => t('Login/logout mode'),
@@ -94,29 +98,29 @@ function fbconnect_appearance_settings(&$form_state) {
       'auto'   => t('Auto login/logout'),
     ),
     '#default_value' => variable_get('fbconnect_loginout_mode', FALSE),
-    '#description' => t('Login to drupal/logout from facebook. Enable this if you don\'t want to logout automatically from facebook.'),
+    '#description' => t("Login to drupal/logout from facebook. Enable this if you don't want to logout automatically from facebook."),
   );
-  
-  // TODO: rename to more clear name 
+
+  // TODO: rename to more clear name.
   $form['site']['fbconnect_reg_options'] = array(
     '#type' => 'checkbox',
     '#title' => t('Disable linking accounts during registration'),
     '#default_value' => variable_get('fbconnect_reg_options', 0),
     '#description' => t('Disables the option to link local account to a FB account on registration'),
   );
-  
+
   $form['display'] = array(
     '#title' => t('Display Settings'),
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  
-  if (fbconnect_get_config()) {  
+
+  if (fbconnect_get_config()) {
     $button = array(
-      'small_short'  => fbconnect_render_button(array('size' => 'small' , 'onclick' => 'return false;')),
+      'small_short'  => fbconnect_render_button(array('size' => 'small', 'onclick' => 'return false;')),
       'medium_short' => fbconnect_render_button(array('size' => 'medium', 'onclick' => 'return false;')),
-      'large_short'  => fbconnect_render_button(array('size' => 'large' , 'onclick' => 'return false;')),
+      'large_short'  => fbconnect_render_button(array('size' => 'large', 'onclick' => 'return false;')),
     );
 
     $form['display']['fbconnect_button'] = array(
@@ -129,9 +133,9 @@ function fbconnect_appearance_settings(&$form_state) {
       '#type' => 'textfield',
       '#description' => t('Enter the text you want to display on the Facebook Connect Button.'),
       '#default_value' => variable_get('fbconnect_button_text', 'Connect'),
-    );  
+    );
   }
-  
+
   $form['display']['fbconnect_pic_allow'] = array(
     '#type' => 'select',
     '#title' => t('Facebook picture settings'),
@@ -142,14 +146,14 @@ function fbconnect_appearance_settings(&$form_state) {
       'disallow' => t('Do not allow the use of facebook user picture at your site'),
     ),
   );
-  
+
   $options_pic_size = array(
     'thumb' => t('Thumb (50px wide)'),
     'small' => t('Small (100px wide)'),
     'normal' => t('Normal (200px wide)'),
     'square' => t('Square (50px by 50px)'),
   );
-  
+
   $form['display']['fbconnect_pic_size'] = array(
     '#type' => 'select',
     '#title' => t('Default Facebook picture size'),
@@ -157,7 +161,7 @@ function fbconnect_appearance_settings(&$form_state) {
     '#default_value' => variable_get('fbconnect_pic_size', 'square'),
     '#options' => $options_pic_size,
   );
-  
+
   $form['display']['fbconnect_pic_size_nodes'] = array(
     '#type' => 'select',
     '#title' => t('Node Facebook picture size'),
@@ -175,51 +179,72 @@ function fbconnect_appearance_settings(&$form_state) {
   $form['display']['fbconnect_pic_size_profile'] = array(
     '#type' => 'select',
     '#title' => t('Profile Facebook picture size'),
-    '#description' => t('This will set the picture size when viewing a user\'s profile page. If your user decides to use his facebook picture, choose its size here.'),
+    '#description' => t("This will set the picture size when viewing a user's profile page. If your user decides to use his facebook picture, choose its size here."),
     '#default_value' => variable_get('fbconnect_pic_size_profile', 'small'),
     '#options' => $options_pic_size,
-  );  
+  );
 
   $form['display']['fbconnect_pic_logo'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show Facebook Logo'),
-    '#description' => t('Uncheck this if you don\'t want to display the facebook logo on the user picture.'),
+    '#description' => t("Uncheck this if you don't want to display the facebook logo on the user picture."),
     '#default_value' => variable_get('fbconnect_pic_logo', TRUE),
+  );
+
+  $form['additional'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Additional'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['additional']['fbconnect_exclude_patterns'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Disable FBConnect on specified pages'),
+    '#description' => t('Enter here path patterns accepted by !drupal_match_path function. One per line.', array(
+      '!drupal_match_path' => l(
+        'drupal_match_path',
+        'http://api.drupal.org/api/drupal/includes--path.inc/function/drupal_match_path/6',
+        array('attributes' => array('target' => '_blank'))
+      ),
+    )),
+    '#default_value' => variable_get('fbconnect_exclude_patterns', ''),
   );
 
   return system_settings_form($form);
 }
 
-
+/**
+ * @todo.
+ */
 function fbconnect_fbapp_settings(&$form_state) {
-  if (!facebook_client()) {
+  if (!fbconnect_facebook_client()) {
     drupal_set_message(t('Ensure that you entered valid api keys.'), 'error');
     drupal_goto('admin/settings/fbconnect');
   }
-  
+
   if (!fbconnect_get_fbuid()) {
     $button_attr = array('text' => t('Connect with your Facebook account'));
     $form['fbconnect'] = array(
       '#value' => fbconnect_render_button($button_attr),
     );
-    
+
     return $form;
   }
-  
+
   $form['fbconnect_base_domaine'] = array(
     '#type' => 'textfield',
     '#title' => t('Base Domain Url'),
-    '#description' => t('Use this to enable your Facebook Connect implementation to span multiple subdomains (e.g., using example.com would enable  www.example.com, foo.example.com or bar.example.com,).'),
+    '#description' => t('Use this to enable your Facebook Connect implementation to span multiple subdomains (e.g., using example.com would enable www.example.com, foo.example.com or bar.example.com,).'),
     '#default_value' => variable_get('fbconnect_base_domaine', NULL),
   );
-  
+
   $form['fbconnect_connect_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Connect Url'),
-    '#description' => t('Your site\'s main URL.'),
+    '#description' => t("Your site's main URL."),
     '#default_value' => variable_get('fbconnect_connect_url', $GLOBALS['base_url'] . '/'),
   );
-  
+
   $form['fbconnect_uninstall_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Post-Remove Callback Url'),
@@ -229,30 +254,33 @@ function fbconnect_fbapp_settings(&$form_state) {
       url('fbconnect/post-remove', array('absolute' => TRUE))
     ),
   );
-  
+
   $form = system_settings_form($form);
   $form['#submit'][] = 'fbconnect_fbapp_settings_submit';
   return $form;
 }
 
+/**
+ * @todo.
+ */
 function fbconnect_fbapp_settings_submit($form, &$form_state) {
   $properties = array(
     'connect_url'   => $form_state['values']['fbconnect_connect_url'],
     'base_domain'   => $form_state['values']['fbconnect_base_domaine'],
     'uninstall_url' => $form_state['values']['fbconnect_uninstall_url'],
   );
-  
-  if (!facebook_client()) {
+
+  if (!fbconnect_facebook_client()) {
     drupal_set_message(t('Unable to get a facebook client, check your api key'), 'error');
-    return FALSE;  
+    return FALSE;
   }
   if (!fbconnect_get_fbuid()) {
     drupal_set_message(t('Unable to autoconfigure your application settings, make sure you are logged into Facebook'), 'warning');
     return FALSE;
   }
-  
+
   try {
-    $res = facebook_client()->api(array(
+    $res = fbconnect_facebook_client()->api(array(
       'method' => 'admin.setAppProperties',
       'properties' => array_filter($properties),
     ));
@@ -264,7 +292,7 @@ function fbconnect_fbapp_settings_submit($form, &$form_state) {
     drupal_set_message(t('Checking your facebook session, you are not allowed to change this application settings'), 'error');
   }
   else {
-    drupal_set_message(t('Your facebook app settings has been updated'));      
+    drupal_set_message(t('Your facebook app settings has been updated'));
   }
 }
 

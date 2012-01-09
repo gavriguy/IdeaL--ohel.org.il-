@@ -1,5 +1,3 @@
-// $Id: fbconnect.js,v 1.6.2.4 2010/10/08 11:42:49 vectoroc Exp $
-
 Drupal.fbconnect = Drupal.fbconnect || {};
 Drupal.fbconnect.init = function () {
   Drupal.behaviors.fbconnect = function(context) {
@@ -8,23 +6,23 @@ Drupal.fbconnect.init = function () {
     }
     Drupal.fbconnect.initLogoutLinks(context);
   }
-  
+
   if (Drupal.settings.fbconnect.loginout_mode == 'auto') {
-    FB.Event.subscribe('auth.sessionChange', Drupal.fbconnect.reload_ifUserConnected);
+    FB.Event.subscribe('auth.authResponseChange', Drupal.fbconnect.reload_ifUserConnected);
 //    FB.Event.subscribe('auth.login', function(response) {
 //      console.log('event auth.login');
 //    });
   }
-  
+
   Drupal.behaviors.fbconnect(document);
 }
 
 Drupal.fbconnect.logout = function(keep_fbaccount_logged) {
-  var logout_url = Drupal.settings.basePath + 'logout'; 
-  
+  var logout_url = Drupal.settings.basePath + 'logout';
+
   if (!keep_fbaccount_logged) {
-    FB.logout(function(response) { 
-      window.location.href = logout_url; 
+    FB.logout(function(response) {
+      window.location.href = logout_url;
     });
   }
   else {
@@ -34,9 +32,9 @@ Drupal.fbconnect.logout = function(keep_fbaccount_logged) {
 
 Drupal.fbconnect.reload_ifUserConnected = function(state) {
   var user = Drupal.settings.fbconnect.user;
-  
-  if (!state.session || user.uid) return;
-  if (state.session.uid != user.fbuid) {
+
+  if (!state.authResponse || user.uid) return;
+  if (state.authResponse.uid != user.fbuid) {
     window.location.reload();
   }
 };
@@ -45,66 +43,70 @@ Drupal.fbconnect.initLogoutLinks = function(context) {
   var loginout_mode = Drupal.settings.fbconnect.loginout_mode;
   var user          = Drupal.settings.fbconnect.user;
   var basePath      = Drupal.settings.basePath;
-  var logout_url    = basePath + 'logout'; 
+  var logout_url    = basePath + 'logout';
   var links         = $('a[href='+ logout_url +']', context).not('.logout_link_inited');
-  
+
   if (loginout_mode == 'manual') return;
-  
-  links.addClass('logout_link_inited').click(function() {
-    var fbuid = FB.getSession() && FB.getSession().uid;
+
+  links.addClass('logout_link_inited').bind('click',function() {
+    var fbuid = FB.getAuthResponse() && FB.getAuthResponse().uid;
     if (!user.fbuid || user.fbuid != fbuid) return;
-    if (loginout_mode == 'auto') { 
+    if (loginout_mode == 'auto') {
       Drupal.fbconnect.logout();
     }
-    else if (loginout_mode == 'ask') {    
+    else if (loginout_mode == 'ask') {
       var t_args  = {'!site_name' : Drupal.settings.fbconnect.invite_name};
       var buttons = [
-          { 
-            'label': Drupal.t('Facebook and !site_name', t_args), 
+          {
+            'label': Drupal.t('Facebook and !site_name', t_args),
             'click': function() {
               this.close();
               Drupal.fbconnect.logout();
             }
           }, {
-            'name': 'cancel', 
-            'label': Drupal.t('!site_name Only', t_args), 
+            'name': 'cancel',
+            'label': Drupal.t('!site_name Only', t_args),
             'click': function() {
               this.close();
               Drupal.fbconnect.logout(true);
             }
-          }              
+          }
       ];
-    
+
       var dialog = new Drupal.fbconnect.PopupDialog({
         'title'   : Drupal.t('Logout'),
         'message' : Drupal.t('Do you also want to logout from your Facebook account?'),
-        'buttons' : buttons 
-      });      
+        'buttons' : buttons
+      });
     }
-    
+
     return false;
   });
 };
 
 Drupal.fbconnect.DoFastRegistration =  function(link) {
   FB.login(function(response) {
-    if (response.session && /email/.test(response.perms)) {
+    if (response.authResponse && response.status == 'connected') {
+      FB.api('/me/permissions', function(perms_response) {
+        if(perms_response['data'][0]['email']) {
       window.location.href = link.href;
     }
-  }, {perms:'email'});
+      });
+    }
+  }, {scope:'email'});
 };
 
 
 function facebook_onlogin_ready() {
   // http://github.com/facebook/connect-js/issues/194
-  if (!FB.getSession()) {
+  if (!FB.getAuthResponse()) {
     return;
   }
   $("#fbconnect-autoconnect-form").submit();
 }
 
 /**
- * Create a dialog. 
+ * Create a dialog.
  *
  * @param opts {Object} Options:
  * @see Drupal.fbconnect.PopupDialog.prototype.prepareDefaults
@@ -113,7 +115,7 @@ function facebook_onlogin_ready() {
  */
 Drupal.fbconnect.PopupDialog = function(options) {
   this.prepareDefaults(options);
-  this.container = Drupal.theme('fb_popup_dialog', this.options);  
+  this.container = Drupal.theme('fb_popup_dialog', this.options);
   this.dialog = FB.Dialog.create({
     content : this.container,
     visible : false,
@@ -121,16 +123,16 @@ Drupal.fbconnect.PopupDialog = function(options) {
     onClose : this.__close_handler,
     closeIcon : true
   });
-  
+
 //  FB.XFBML.parse(dialog);
-  
+
 //  var popup = new FB.UI.PopupDialog(
-//    oThis.options.title, 
-//    oThis.container, 
+//    oThis.options.title,
+//    oThis.container,
 //    oThis.options.showLoading,
 //    oThis.options.hideUntilLoaded
 //  );
-  
+
   this.callback('load', this.dialog);
 };
 
@@ -149,12 +151,12 @@ Drupal.fbconnect.PopupDialog.prototype.callback = function(event, data) {
     if (btn.click instanceof Function) btn.click.apply(this, [btn]);
     else if (btn.name == 'cancel') this.close();
     break;
-    
+
   case 'close':
-    var btn = this.findButton('cancel'); 
+    var btn = this.findButton('cancel');
     if (btn) this.callback('click', btn);
     break;
-    
+
   case 'load':
     this.show();
     break;
@@ -168,18 +170,18 @@ Drupal.fbconnect.PopupDialog.prototype.prepareDefaults = function(options) {
     'buttons'         : {},
     'showLoading'     : false,
     'hideUntilLoaded' : false
-  };  
+  };
   $.extend(this.options, defaults, options);
-  
+
   this.__close_handler = this.createHandler('close', {});
-  this.options.dialog = this; 
+  this.options.dialog = this;
   if (this.options.callback instanceof Function) {
     this.callback = this.options.callback;
   }
 };
 
 Drupal.fbconnect.PopupDialog.prototype.show = function() {
-  if (this.dialog) {    
+  if (this.dialog) {
     FB.Dialog.show(this.dialog);
   }
 };
@@ -198,14 +200,14 @@ Drupal.fbconnect.PopupDialog.prototype.findButton = function(name) {
       return true;
     }
   });
-  
+
   return button;
 }
 
 Drupal.theme.prototype.fb_popup_dialog_buttons = function(buttons, dialog) {
   buttons = buttons || {};
   var container = $('<div class="dialog_buttons"></div>');
-  
+
   jQuery.each(buttons, function(i, btn) {
     var button = $('<input type="button" class="dialog_inputbutton">');
     if (!btn['name']) btn['name'] = i;
@@ -217,7 +219,7 @@ Drupal.theme.prototype.fb_popup_dialog_buttons = function(buttons, dialog) {
     button.click(dialog.createHandler('click', btn));
     button.appendTo(container);
   });
-    
+
   return container.get(0);
 };
 
@@ -233,7 +235,7 @@ Drupal.theme.prototype.fb_popup_dialog = function(options) {
     options.message.toString(),
     '</div>'
   ];
-  
+
   $(elements.join("\n")).each(function() {
     container.appendChild(this);
   });
@@ -253,28 +255,28 @@ Drupal.theme.prototype.fbml_name = function(fbuid, options) {
     'useyou' : false,
     'linked' : false
   };
-  
+
   options = $.extend({}, defaults, options);
-  
+
   output.push('" useyou="'+ (!!options.useyou ? 'true' : 'false') +'"');
   output.push('" linked="'+ (!!options.linked ? 'true' : 'false') +'"');
   output.push('></fb:name>');
-  
+
   return output.join('');
 };
 
 Drupal.theme.prototype.fbml_profile_pic = function(fbuid, options) {
   var output = ['<fb:profile-pic uid="', fbuid, '"'];
   options = options || {};
-  
+
   if (options.width)  output.push('" width="'+ options.width +'"');
   if (options.height) output.push('" height="'+ options.height +'"');
   if (options.size)   output.push('" size="'+ options.size +'"');
-  
+
   output.push('" facebook-logo="'+ (!!options['facebook-logo'] ? 'true' : 'false') +'"')
-  output.push('" linked="'+ (!!options.linked ? 'true' : 'false') +'"');  
+  output.push('" linked="'+ (!!options.linked ? 'true' : 'false') +'"');
   output.push('></fb:profile-pic>');
-  
+
   return output.join('');
 };
 
